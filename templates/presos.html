@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Listado de presos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Listado de presos</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre completo</th>
+                <th>DNI</th>
+                <th>Fecha ingreso</th>
+                <th>Pabellón</th>
+                <th>Delito</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for preso in presos %}
+            <tr>
+                <td>{{ preso.id_preso }}</td>
+                <td>{{ preso.nombre }} {{ preso.apellidos }}</td>
+                <td>{{ preso.dni }}</td>
+                <td>{{ preso.fecha_ingreso }}</td>
+                <td>{{ preso.pabellon }}</td>
+                <td>{{ preso.delito }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
