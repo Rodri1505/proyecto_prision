@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Sistema de Gestión de Prisión{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="navbar-brand">Gestión de Prisión</div>
+    <nav class="navbar-menu">
+        <a href="{{ url_for('index') }}">Inicio</a>
+        <a href="{{ url_for('listar_presos') }}">Presos</a>
+        <!-- Más enlaces en el futuro: Empleados, Bloques, etc. -->
+    </nav>
+</header>
+
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>

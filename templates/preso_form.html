@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo_pagina }}{% endblock %}
+
+{% block content %}
+<h1>{{ titulo_pagina }}</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label>Nombre:</label>
+        <input type="text" name="nombre" value="{{ preso.nombre if preso else '' }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>Apellidos:</label>
+        <input type="text" name="apellidos" value="{{ preso.apellidos if preso else '' }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>DNI:</label>
+        <input type="text" name="dni" value="{{ preso.dni if preso else '' }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>Fecha de nacimiento:</label>
+        <input type="date" name="fecha_nacimiento" value="{{ preso.fecha_nacimiento if preso else '' }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>Fecha de ingreso:</label>
+        <input type="date" name="fecha_ingreso" value="{{ preso.fecha_ingreso if preso else '' }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>Fecha salida prevista:</label>
+        <input type="date" name="fecha_salida_prev" value="{{ preso.fecha_salida_prev if preso and preso.fecha_salida_prev else '' }}">
+    </div>
+
+    <div class="form-group">
+        <label>Pabellón:</label>
+        <select name="id_pabellon" required>
+            <option value="">-- Selecciona un pabellón --</option>
+            {% for pab in pabellones %}
+            <option value="{{ pab.id_pabellon }}"
+                {% if preso and preso.id_pabellon == pab.id_pabellon %}selected{% endif %}>
+                {{ pab.nombre }} (Bloque {{ pab.id_bloque }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Delito:</label>
+        <select name="id_delito" required>
+            <option value="">-- Selecciona un delito --</option>
+            {% for del in delitos %}
+            <option value="{{ del.id_delito }}"
+                {% if preso and preso.id_delito == del.id_delito %}selected{% endif %}>
+                {{ del.nombre }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Observaciones:</label>
+        <textarea name="observaciones" rows="3">{{ preso.observaciones if preso and preso.observaciones else '' }}</textarea>
+    </div>
+
+    <div class="actions">
+        <button type="submit" class="btn">Guardar</button>
+        <a href="{{ url_for('listar_presos') }}" class="btn">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

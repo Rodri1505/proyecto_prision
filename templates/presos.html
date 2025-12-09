@@ -1,40 +1,46 @@
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="utf-8">
-    <title>Listado de presos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-<div class="container">
-    <h1>Listado de presos</h1>
+{% block title %}Listado de presos{% endblock %}
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre completo</th>
-                <th>DNI</th>
-                <th>Fecha ingreso</th>
-                <th>Pabellón</th>
-                <th>Delito</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for preso in presos %}
-            <tr>
-                <td>{{ preso.id_preso }}</td>
-                <td>{{ preso.nombre }} {{ preso.apellidos }}</td>
-                <td>{{ preso.dni }}</td>
-                <td>{{ preso.fecha_ingreso }}</td>
-                <td>{{ preso.pabellon }}</td>
-                <td>{{ preso.delito }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% block content %}
+<h1>Listado de presos</h1>
+
+<div class="actions">
+    <a href="{{ url_for('nuevo_preso') }}" class="btn">Nuevo preso</a>
 </div>
 
-</body>
-</html>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre completo</th>
+            <th>DNI</th>
+            <th>Fecha ingreso</th>
+            <th>Pabellón</th>
+            <th>Delito</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for preso in presos %}
+        <tr>
+            <td>{{ preso.id_preso }}</td>
+            <td>{{ preso.nombre }} {{ preso.apellidos }}</td>
+            <td>{{ preso.dni }}</td>
+            <td>{{ preso.fecha_ingreso }}</td>
+            <td>{{ preso.pabellon }}</td>
+            <td>{{ preso.delito }}</td>
+            <td>
+                <a href="{{ url_for('editar_preso', id_preso=preso.id_preso) }}" class="link-accion">Editar</a>
+                |
+                <form action="{{ url_for('eliminar_preso', id_preso=preso.id_preso) }}" method="post" style="display:inline;">
+                    <button type="submit" class="link-accion btn-link" onclick="return confirm('¿Seguro que deseas eliminar este preso?');">
+                        Eliminar
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
