@@ -1,16 +1,46 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import mysql.connector
 from mysql.connector import Error
+from functools import wraps
 from config import DB_CONFIG
 
 app = Flask(__name__)
 
+# Clave secreta necesaria para usar sesiones (cámbiala por una más larga en un proyecto real)
+app.secret_key = "clave_super_secreta_para_sesiones"
+
+# Usuarios de la práctica (todos con la misma contraseña "1234")
+USERS = {
+    "abel": "1234",
+    "amina": "1234",
+    "rodrigo": "1234",
+    "luciano": "1234",
+    "thomas": "1234",
+    "jeanpierre": "1234"
+}
+
+
 def get_db_connection():
+    """Devuelve una conexión a la base de datos MySQL."""
     return mysql.connector.connect(**DB_CONFIG)
+
+
+def login_required(f):
+    """
+    Decorador para proteger rutas.
+    Si no hay usuario en sesión, redirige a /login.
+    """
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if "username" not in session:
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return wrapper
 
 
 @app.route("/")
 def index():
+    """Página de inicio básica que muestra el número de presos."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -23,8 +53,47 @@ def index():
         return f"Error al conectar con la base de datos: {e}"
 
 
+# -----------------------
+# RUTAS DE AUTENTICACIÓN
+# -----------------------
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """
+    Login sencillo:
+    - GET: muestra formulario.
+    - POST: verifica usuario y contraseña contra el diccionario USERS.
+    """
+    error = None
+
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        if username in USERS and USERS[username] == password:
+            session["username"] = username
+            return redirect(url_for("listar_presos"))
+        else:
+            error = "Usuario o contraseña incorrectos"
+
+    return render_template("login.html", error=error)
+
+
+@app.route("/logout")
+def logout():
+    """Cerrar sesión: elimina el usuario de la sesión y redirige a /login."""
+    session.pop("username", None)
+    return redirect(url_for("login"))
+
+
+# -----------------------
+# CRUD PRESO (PROTEGIDO)
+# -----------------------
+
 @app.route("/presos")
+@login_required
 def listar_presos():
+    """Lista los presos con JOIN a PABELLON y DELITO."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
@@ -52,11 +121,12 @@ def listar_presos():
 
 
 @app.route("/presos/nuevo", methods=["GET", "POST"])
+@login_required
 def nuevo_preso():
+    """Crea un nuevo preso."""
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Obtener datos para selects
     cursor.execute("SELECT id_pabellon, id_bloque, nombre FROM PABELLON ORDER BY id_pabellon;")
     pabellones = cursor.fetchall()
 
@@ -91,7 +161,6 @@ def nuevo_preso():
         conn.close()
         return redirect(url_for("listar_presos"))
 
-    # GET
     cursor.close()
     conn.close()
     return render_template(
@@ -104,11 +173,12 @@ def nuevo_preso():
 
 
 @app.route("/presos/editar/<int:id_preso>", methods=["GET", "POST"])
+@login_required
 def editar_preso(id_preso):
+    """Edita un preso existente."""
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Datos para selects
     cursor.execute("SELECT id_pabellon, id_bloque, nombre FROM PABELLON ORDER BY id_pabellon;")
     pabellones = cursor.fetchall()
 
@@ -150,13 +220,12 @@ def editar_preso(id_preso):
         conn.close()
         return redirect(url_for("listar_presos"))
 
-    # GET: obtener preso actual
+    # GET: cargar datos del preso
     cursor.execute("SELECT * FROM PRESO WHERE id_preso = %s", (id_preso,))
     preso = cursor.fetchone()
     cursor.close()
     conn.close()
 
-    # Adaptar fechas a string ISO YYYY-MM-DD (por si acaso)
     if preso:
         if preso["fecha_nacimiento"]:
             preso["fecha_nacimiento"] = preso["fecha_nacimiento"].isoformat()
@@ -175,7 +244,9 @@ def editar_preso(id_preso):
 
 
 @app.route("/presos/eliminar/<int:id_preso>", methods=["POST"])
+@login_required
 def eliminar_preso(id_preso):
+    """Elimina un preso de la base de datos."""
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM PRESO WHERE id_preso = %s", (id_preso,))

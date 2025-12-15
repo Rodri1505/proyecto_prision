@@ -2,7 +2,7 @@
 
 DB_CONFIG = {
     "host": "localhost",
-    "user": "prision_user",       # <-- ahora este
-    "password": "1234",    # <-- y esta contraseña
+    "user": "prision_user",       
+    "password": "1234",    
     "database": "prision_db"
 }

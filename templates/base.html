@@ -12,7 +12,13 @@
     <nav class="navbar-menu">
         <a href="{{ url_for('index') }}">Inicio</a>
         <a href="{{ url_for('listar_presos') }}">Presos</a>
-        <!-- Más enlaces en el futuro: Empleados, Bloques, etc. -->
+
+        {% if session.username %}
+            <span class="navbar-user">Conectado como: {{ session.username }}</span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
     </nav>
 </header>
 
