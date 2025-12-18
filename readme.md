@@ -113,3 +113,11 @@ VALUES
 ('María', 'Gómez Torres', '99001122Z', 'médico', '2020-01-20', 2800.00, 2),
 ('Jorge', 'Díaz Moreno', '11223344W', 'seguridad', '2017-04-05', 1900.00, 3),
 ('Lucía', 'Ramírez Cruz', '22334455V', 'psicóloga', '2021-11-15', 2600.00, 1);
+```
+## 3.Visionado en página web y creación de usuarios.
+
+Tras la cración de la base de datos nos enseñaron el uso de faker, programa de python que se puede usar para crear datos, con los que llenaremos los inserts de PRESO, los cuales se ven reflejados posteriormente en la base de datos. 
+
+También hemos usado flask para la integración de la base de datos en una web sencilla que por ahora simplemente es una tabla. Los roles de administrador, editor y viewer han sido creados cada uno con sus permisos, ademas de un tipo de usuario adicional para poder conectar la bd con app.py.
+
+ Por ahora los roles no afectan a los usuarios, que son todos administrador, pero la idea es que a futuro los usuarios no solo tengan limites de permisos de edición si no que incluso dependiendo de tu rol puedas ver unas determinadas columnas de la tabla. Sin embargo por ahora desconocemos de como se implementaría, ya que solo sabemos como implementar estos usuarios en config.py
