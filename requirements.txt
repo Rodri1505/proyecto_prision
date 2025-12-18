@@ -1,3 +1,7 @@
 Flask
 mysql-connector-python
+<<<<<<< HEAD
 Faker
+=======
+Faker
+>>>>>>> db469c65132eda75836c99f778eabe4a5a44405b
